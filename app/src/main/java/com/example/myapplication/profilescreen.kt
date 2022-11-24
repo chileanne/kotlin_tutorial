@@ -7,13 +7,15 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +33,11 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun profilescreen() {
+    var selectedTabIndex by remember {
+        mutableStateOf(0)
+    }
+
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -73,6 +80,30 @@ fun profilescreen() {
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
         )
+
+        Spacer(modifier = Modifier.height(10.dp))
+        PostTabView(
+            imageWithTexts = listOf(
+                ImageWithText(
+                    image = painterResource(id = R.drawable.qa),
+                    text = "Posts"
+                ),
+                ImageWithText(
+                    image = painterResource(id = R.drawable.discord),
+                    text = "Reels"
+                ),
+                ImageWithText(
+                    image = painterResource(id = R.drawable.telegram),
+                    text = "IGTV"
+                ),
+                ImageWithText(
+                    image = painterResource(id = R.drawable.profile),
+                    text = "Profile"
+                ),
+            )
+        ) {
+            selectedTabIndex = it
+        }
 
     }
 }
@@ -384,7 +415,10 @@ fun HighlightSection(
     modifier: Modifier = Modifier,
     highlights: List<ImageWithText>
 ) {
-    LazyRow(modifier = modifier) {
+    LazyRow(
+        horizontalArrangement =Arrangement.SpaceEvenly,
+        modifier = modifier
+    ) {
         items(highlights.size) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -405,3 +439,70 @@ fun HighlightSection(
         }
     }
 }
+
+
+@Composable
+fun PostTabView(
+    modifier: Modifier = Modifier,
+    imageWithTexts: List<ImageWithText>,
+    onTabSelected: (selectedIndex: Int) -> Unit
+) {
+    var selectedTabIndex by remember {
+        mutableStateOf(0)
+    }
+    val inactiveColor = Color(0xFF777777)
+    TabRow(
+        selectedTabIndex = selectedTabIndex,
+        backgroundColor = Color.Transparent,
+        contentColor = Color.Black,
+        modifier = modifier
+    ) {
+        imageWithTexts.forEachIndexed { index, item ->
+            Tab(
+                selected = selectedTabIndex == index,
+                selectedContentColor = Color.Black,
+                unselectedContentColor = inactiveColor,
+                onClick = {
+                    selectedTabIndex = index
+                    onTabSelected(index)
+                }
+            ) {
+                Icon(
+                    painter = item.image,
+                    contentDescription = item.text,
+                    tint = if(selectedTabIndex == index) Color.Black else inactiveColor,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .size(20.dp)
+                )
+            }
+        }
+    }
+}
+
+//@ExperimentalFoundationApi
+//@Composable
+//fun PostSection(
+//    posts: List<Painter>,
+//    modifier: Modifier = Modifier
+//) {
+//    LazyVerticalGrid(
+//        cells = GridCells.Fixed(3),
+//        modifier = modifier
+//            .scale(1.01f)
+//    ) {
+//        items(posts.size) {
+//            Image(
+//                painter = posts[it],
+//                contentDescription = null,
+//                contentScale = ContentScale.Crop,
+//                modifier = Modifier
+//                    .aspectRatio(1f)
+//                    .border(
+//                        width = 1.dp,
+//                        color = Color.White
+//                    )
+//            )
+//        }
+//    }
+//}
